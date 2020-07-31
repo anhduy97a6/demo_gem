@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý nhân viên </title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" th:href="@{/image/favicon.ico}"/>
+    <link rel="stylesheet" th:href="@{/admin/css/bootstrap.min.css}">
+
+    <link rel="stylesheet" th:href="@{/admin/font-awesome/4.5.0/css/font-awesome.min.css}">
+    <link rel="stylesheet" th:href="@{/admin/css/fonts.googleapis.com.css}">
+    <link rel="stylesheet" th:href="@{/admin/css/ace.min.css}" class="ace-main-stylesheet" id="main-ace-style">
+    <link rel="stylesheet" th:href="@{/admin/css/ace-part2.min.css}" class="ace-main-stylesheet"/>
+    <link rel="stylesheet" th:href="@{/admin/css/ace-skins.min.css}">
+    <link rel="stylesheet" th:href="@{/admin/css/ace-rtl.min.css}">
+    <link rel="stylesheet" href="" th:href="@{/admin/css/ace-ie.min.css}"/>
+    <link rel="stylesheet" href="" th:href="@{/admin/css/custom.css}"/>
+    <script th:src="@{/admin/js/ace-extra.min.js}"></script>
+
+
+</head>
+<body class="no-skin">
+<div th:replace="fragments/admin-header :: header_admin "></div>
+<div class="main-container ace-save-state" id="main-container">
+    <div th:replace="fragments/admin-navbar :: navbar_admin "></div>
+
+
+    <div class="main-content">
+        <div class="main-content-inner">
+            <div class="breadcrumbs ace-save-state" id="breadcrumbs">
+                <ul class="breadcrumb">
+                    <li>
+                        <i class="ace-icon fa fa-home home-icon"></i>
+                        <a th:href="@{/admin}">Trang chủ</a>
+                    </li>
+
+                    <li class="active">Nhân viên</li>
+                </ul><!-- /.breadcrumb -->
+<!--                <h3 th:if="${param.addSuccess}"> Add Solution Success </h3>-->
+<!--                <h3 th:if="${param.updateSuccess}"> Add Solution Success </h3>-->
+                <div class="nav-search" id="nav-search">
+                    <form class="form-search" >
+								<span class="input-icon">
+									<input type="text"  placeholder="Search ..."
+                                           class="nav-search-input" autocomplete="off"/>
+
+								</span>
+
+                    </form>
+                </div><!-- /.nav-search -->
+
+
+            </div>
+            <div class="page-content">
+                <div class="row">
+                    <div class="col-xs-12">
+
+
+                        <a class="btn btn-primary btn-add" id="new-employee" th:href="@{/solution/add}" >
+                            <i class="fa fa-plus-circle" aria-hidden="true"></i>Add new Solution
+                        </a>
+
+                        <div class="clearfix">
+                            <div class="pull-right tableTools-container"></div>
+                        </div>
+                        <div class="table-header">
+                            Quản lý dự án
+                        </div>
+
+                        <!-- div.table-responsive -->
+
+                        <!-- div.dataTables_borderWrap -->
+                        <div>
+                            <table id="dynamic-table"
+                                   class="table table-striped table-bordered table-hover text-center">
+                                <thead>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th></th>
+                                    <th th:each="index : ${attributesList}">
+                                        <div class="text-center">
+                                            <i class="glyphicon glyphicon-minus column-delete"  title="Delete Column" data-toggle="modal" data-target="#deleteModal"
+                                               th:attr="data-columnid=${index.getId()}" style="cursor: pointer; color: #1e347b"></i>
+                                        </div>
+                                    </th>
+                                    <th class="text-center">
+                                        <li class="glyphicon glyphicon-plus " style="cursor: pointer; color: red" data-toggle="modal" data-target="#exampleModal"></li>
+                                    </th>
+
+
+                                </tr>
+                                <tr class="text-center" >
+                                    <th class="text-center">Solution</th>
+                                    <th>GEM's Role in Development Process</th>
+                                    <th>BA/Owner</th>
+                                    <th class="text-center"  th:each="column : ${attributesList} " th:text="${column.name}"></th>
+
+                                </tr>
+
+                                </thead>
+
+                                <tbody>
+                                <tr th:each="solution: ${solutionList}">
+                                    <td th:text="${solution.getName()}">
+                                    </td>
+                                    <td th:if="${solution.getRoleGem() == 2}" >Entire Solution</td>
+                                    <td th:unless="${solution.getRoleGem() == 2}" >Partial</td>
+
+                                    <td th:text="${solution.owner}"></td>
+
+
+                                    <td th:each="value:${solution.getAttributesValueList()}" th:text="${value.getValue()}"></td>
+                                    <td>
+                                        <a >
+                                            <li class="glyphicon glyphicon-asterisk"></li>
+                                        </a>
+                                        &nbsp;
+                                        <a th:href="${'/solution/edit/' + solution.getId()}">
+                                            <li class="glyphicon glyphicon-pencil"></li>
+                                        </a>&nbsp;
+                                        <a th:href="${'/solution/delete/'+solution.getId()}" onclick="return confirm('Are you sure you want to delete this item?');">
+                                            <li class="glyphicon glyphicon-trash"></li>
+                                        </a>
+                                    </td>
+
+
+
+
+
+                                </tr>
+
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+<!--                    <nav style="margin-top: 50px;" aria-label="..." th:if="${employeeList.size()>0}">-->
+
+<!--                        <ul class="pagination" style="">-->
+<!--                            <th:block th:each="i: ${#numbers.sequence(0, page.totalPages - 1)}">-->
+<!--                                <li class="page-item active" th:if="${page.number == i}" aria-current="page">-->
+<!--                                    <a class="page-link" th:href="${''}" th:text="${i+1}"><span class="sr-only"></span></a>-->
+<!--                                </li>-->
+<!--                                <li class="page-item" th:unless="${page.number == i}"><a class="page-link"-->
+<!--                                                                                         th:text="${i+1}"-->
+<!--                                                                                         th:href="${'?'-->
+<!--                                                                                       +('&page='+i)-->
+<!--                                                                                       +(#httpServletRequest.getParameter('size')==null?'':('&size='+#httpServletRequest.getParameter('size')))-->
+<!--                                                                                       +(#httpServletRequest.getParameter('name')==null?'':('&name='+#httpServletRequest.getParameter('name')))}"></a>-->
+<!--                                </li>-->
+<!--                            </th:block>-->
+<!--                        </ul>-->
+<!--                    </nav>-->
+                </div>
+                <!-- Modal edit and create -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog"
+                     aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Add Column</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="form-group margin-bottom-15" style="margin-top: 20px">
+                                    <label>Name Column:</label>
+                                    <input type="text" class="form-control" id="input-column-name">
+                                </div>
+
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary" id="add-column">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog"
+                     aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="deleteModalLabel">Delete Column</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                Are you sure?
+
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                                <button type="button" class="btn btn-primary delete-column"> Yes</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+    <div th:replace="fragments/admin-footer :: footer_admin "></div>
+
+</div>
+<script type="text/javascript">
+    if ('ontouchstart' in document.documentElement) document.write("<script src='assets/js/jquery.mobile.custom.min.js'>" + "<" + "/script>");
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"
+        integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/7.9.0/sweetalert2.all.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"
+        integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+        crossorigin="anonymous"></script>
+
+<script th:src="@{/admin/js/jquery-2.1.4.min.js}"></script>
+<script th:src="@{/admin/js/bootstrap.min.js}"></script>
+<script th:src="@{/admin/js/jquery.dataTables.min.js}"></script>
+<script th:src="@{/admin/js/jquery.dataTables.bootstrap.min.js}"></script>
+<script th:src="@{/admin/js/dataTables.buttons.min.js}"></script>
+<script th:src="@{/admin/js/buttons.flash.min.js}"></script>
+<script th:src="@{/admin/js/buttons.html5.min.js}"></script>
+<script th:src="@{/admin/js/buttons.print.min.js}"></script>
+<script th:src="@{/admin/js/buttons.colVis.min.js}"></script>
+<script th:src="@{/admin/js/dataTables.select.min.js}"></script>
+<script th:src="@{/js/solution.js}"></script>
+<script th:src="@{/admin/js/ace-elements.min.js}"></script>
+<script th:src="@{/admin/js/ace.min.js}"></script>
+
+
+
+
+<div class="tooltip top in" style="display: none;">
+    <div class="tooltip-inner"></div>
+</div>
+</body>
+</html>
